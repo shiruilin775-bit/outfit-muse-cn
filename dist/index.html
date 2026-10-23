@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0d0f12" />
+  <meta name="description" content="上传自己的衣服，结合天气从私人衣橱生成每日穿搭建议。" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <link rel="stylesheet" href="./styles.css" />
+  <title>今日穿搭 · 私人衣橱搭配助手</title>
+</head>
+<body>
+  <div class="ambient ambient-one"></div>
+  <div class="ambient ambient-two"></div>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <button class="brand" data-route="today" aria-label="返回今日穿搭">
+        <span class="brand-mark">衣</span>
+        <span>
+          <strong>今日穿搭</strong>
+          <small>只用你真正拥有的衣服</small>
+        </span>
+      </button>
+      <div class="top-actions">
+        <span class="privacy-pill"><i></i> 衣橱仅存本机</span>
+        <button class="icon-button" id="installButton" hidden aria-label="安装到桌面" title="安装到桌面">↓</button>
+        <button class="avatar-button" data-route="settings" aria-label="打开设置">我</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="page active" id="page-today" aria-labelledby="todayTitle">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow" id="todayDate">今天</p>
+            <h1 id="todayTitle">穿得舒服，也穿得像自己。</h1>
+          </div>
+          <button class="ghost-button desktop-only" data-route="wardrobe">管理衣橱 <span>→</span></button>
+        </div>
+
+        <div class="today-grid">
+          <article class="weather-card card" id="weatherCard">
+            <div class="weather-main">
+              <div>
+                <div class="location-row"><span id="weatherCity">上海</span><button class="text-button" id="editWeatherButton">修改</button></div>
+                <div class="temperature"><span id="weatherTemp">21</span><sup>°C</sup></div>
+                <p><span id="weatherCondition">多云</span> · <span id="weatherRange">18–24°C</span></p>
+              </div>
+              <div class="weather-side">
+                <span class="weather-icon" id="weatherIcon">☁️</span>
+                <p>体感 <strong id="weatherFeels">22°</strong></p>
+                <p>风速 <strong id="weatherWind">8 km/h</strong></p>
+              </div>
+            </div>
+            <div class="weather-actions">
+              <button class="soft-button" id="locateWeatherButton">⌖ 使用当前位置</button>
+              <span id="weatherSource">手动天气</span>
+            </div>
+          </article>
+
+          <article class="quick-card card">
+            <div class="quick-copy">
+              <span class="tiny-label">开始使用</span>
+              <h2>先把衣服放进来</h2>
+              <p>支持一次选择多张照片。我们会按文件名初步分类，你也可以随时修改。</p>
+            </div>
+            <div class="quick-stat"><strong id="wardrobeCount">0</strong><span>件衣物</span></div>
+            <button class="primary-button" id="quickUploadButton"><span>＋</span> 上传衣服</button>
+          </article>
+        </div>
+
+        <div class="section-title-row">
+          <div>
+            <p class="eyebrow">今日推荐</p>
+            <h2>从你的衣橱里选</h2>
+          </div>
+          <button class="swap-button" id="swapOutfitButton">↻ 换一套</button>
+        </div>
+
+        <article class="outfit-card card" id="outfitCard">
+          <div class="outfit-topline">
+            <div>
+              <span class="tiny-label" id="outfitOccasion">日常 · 通勤</span>
+              <h2 id="outfitTitle">轻松层次感</h2>
+            </div>
+            <div class="confidence"><span>匹配度</span><strong id="confidenceValue">88%</strong></div>
+          </div>
+          <div class="outfit-items" id="outfitItems"></div>
+          <div class="outfit-reason">
+            <span class="reason-mark">✦</span>
+            <div>
+              <h3 id="reasonHeading">为什么推荐这套</h3>
+              <p id="outfitReason">上传衣服后，我会结合温度、季节、颜色和场合，从你的衣橱中组合。</p>
+            </div>
+          </div>
+          <div class="outfit-tags" id="outfitTags"></div>
+          <div class="outfit-footer">
+            <span id="outfitSourceNote">当前展示示例，上传后自动切换为你的衣服</span>
+            <button class="save-outfit-button" id="saveOutfitButton">♡ 收藏这套</button>
+          </div>
+        </article>
+      </section>
+
+      <section class="page" id="page-wardrobe" aria-labelledby="wardrobeTitle">
+        <div class="page-heading wardrobe-heading">
+          <div>
+            <p class="eyebrow">我的衣橱</p>
+            <h1 id="wardrobeTitle">把选择变简单。</h1>
+          </div>
+          <button class="primary-button" id="wardrobeUploadButton"><span>＋</span> 上传衣服</button>
+        </div>
+        <div class="wardrobe-tools card">
+          <div class="search-wrap"><span>⌕</span><input id="wardrobeSearch" type="search" placeholder="搜索名称、颜色或风格" /></div>
+          <div class="filter-chips" id="categoryFilters">
+            <button class="filter-chip active" data-category="全部">全部</button>
+            <button class="filter-chip" data-category="上装">上装</button>
+            <button class="filter-chip" data-category="下装">下装</button>
+            <button class="filter-chip" data-category="外套">外套</button>
+            <button class="filter-chip" data-category="鞋履">鞋履</button>
+            <button class="filter-chip" data-category="配饰">配饰</button>
+          </div>
+        </div>
+        <div class="wardrobe-grid" id="wardrobeGrid"></div>
+        <div class="empty-state card" id="wardrobeEmpty">
+          <div class="empty-visual"><span>👕</span><span>👖</span><span>👟</span></div>
+          <h2>衣橱还是空的</h2>
+          <p>上传正面、光线清楚的单件衣物照片，搭配结果会更准确。</p>
+          <button class="primary-button" id="emptyUploadButton">上传第一件衣服</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-saved" aria-labelledby="savedTitle">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">搭配册</p>
+            <h1 id="savedTitle">喜欢的，都留在这里。</h1>
+          </div>
+        </div>
+        <div class="saved-grid" id="savedGrid"></div>
+        <div class="empty-state card" id="savedEmpty">
+          <div class="empty-visual single">♡</div>
+          <h2>还没有收藏搭配</h2>
+          <p>在今日推荐里点击“收藏这套”，它就会出现在这里。</p>
+          <button class="soft-button" data-route="today">去看看今日推荐</button>
+        </div>
+      </section>
+
+      <section class="page" id="page-settings" aria-labelledby="settingsTitle">
+        <div class="page-heading">
+          <div>
+            <p class="eyebrow">设置与隐私</p>
+            <h1 id="settingsTitle">你的衣橱，由你掌控。</h1>
+          </div>
+        </div>
+        <div class="settings-grid">
+          <article class="setting-card card">
+            <div class="setting-icon">◎</div>
+            <div><h2>默认场合</h2><p>影响推荐的正式程度和风格。</p></div>
+            <select id="occasionSelect" aria-label="默认场合">
+              <option>日常</option><option>通勤</option><option>约会</option><option>运动</option><option>正式</option><option>旅行</option>
+            </select>
+          </article>
+          <article class="setting-card card">
+            <div class="setting-icon">◌</div>
+            <div><h2>怕冷程度</h2><p>推荐会据此增减外套与保暖度。</p></div>
+            <select id="coldSelect" aria-label="怕冷程度">
+              <option value="0">不怕冷</option><option value="1" selected>正常</option><option value="2">比较怕冷</option>
+            </select>
+          </article>
+          <article class="setting-card card privacy-card">
+            <div class="setting-icon">⌂</div>
+            <div><h2>数据只在本机</h2><p>衣物照片、标签和收藏使用浏览器本地存储。清除浏览器数据会同时清空衣橱。</p></div>
+            <span class="safe-badge">默认开启</span>
+          </article>
+          <article class="setting-card card danger-card">
+            <div class="setting-icon">×</div>
+            <div><h2>清空本机数据</h2><p>永久删除本设备上的衣物、收藏与天气设置。</p></div>
+            <button class="danger-button" id="clearDataButton">清空数据</button>
+          </article>
+        </div>
+        <p class="version-note">今日穿搭 · 本地优先版 1.0</p>
+      </section>
+    </main>
+
+    <nav class="bottom-nav" aria-label="主要导航">
+      <button class="nav-item active" data-route="today"><span>⌂</span><small>今日</small></button>
+      <button class="nav-item" data-route="wardrobe"><span>▥</span><small>衣橱</small></button>
+      <button class="nav-upload" id="navUploadButton" aria-label="上传衣服">＋</button>
+      <button class="nav-item" data-route="saved"><span>♡</span><small>搭配册</small></button>
+      <button class="nav-item" data-route="settings"><span>⋯</span><small>设置</small></button>
+    </nav>
+  </div>
+
+  <input type="file" id="clothingInput" accept="image/*" multiple hidden />
+
+  <dialog class="modal" id="weatherModal">
+    <form method="dialog" id="weatherForm">
+      <div class="modal-header"><div><span class="tiny-label">天气设置</span><h2>手动填写今日天气</h2></div><button class="modal-close" type="button" data-close-modal="weatherModal" aria-label="关闭">×</button></div>
+      <div class="form-grid">
+        <label>城市<input name="city" required placeholder="如：苏州" /></label>
+        <label>天气<select name="condition"><option>晴</option><option>多云</option><option>阴</option><option>小雨</option><option>大雨</option><option>雪</option><option>雾</option></select></label>
+        <label>当前温度<input name="temp" type="number" min="-40" max="55" required /></label>
+        <label>体感温度<input name="feels" type="number" min="-50" max="60" required /></label>
+        <label>最低温度<input name="low" type="number" min="-50" max="60" required /></label>
+        <label>最高温度<input name="high" type="number" min="-50" max="60" required /></label>
+        <label>风速 km/h<input name="wind" type="number" min="0" max="200" required /></label>
+        <label>降雨概率 %<input name="rain" type="number" min="0" max="100" required /></label>
+      </div>
+      <button class="primary-button full" value="default">保存天气并重新搭配</button>
+    </form>
+  </dialog>
+
+  <dialog class="modal" id="itemModal">
+    <form method="dialog" id="itemForm">
+      <div class="modal-header"><div><span class="tiny-label">衣物资料</span><h2>编辑这件衣服</h2></div><button class="modal-close" type="button" data-close-modal="itemModal" aria-label="关闭">×</button></div>
+      <input name="id" type="hidden" />
+      <div class="edit-preview" id="editPreview"></div>
+      <div class="form-grid">
+        <label class="wide">名称<input name="name" required placeholder="如：米白色针织开衫" /></label>
+        <label>品类<select name="category"><option>上装</option><option>下装</option><option>外套</option><option>连衣裙</option><option>鞋履</option><option>包袋</option><option>配饰</option></select></label>
+        <label>主色<select name="color"><option>黑色</option><option>白色</option><option>灰色</option><option>米色</option><option>棕色</option><option>蓝色</option><option>绿色</option><option>红色</option><option>粉色</option><option>紫色</option><option>黄色</option><option>多色</option></select></label>
+        <label>季节<select name="season"><option>四季</option><option>春秋</option><option>夏季</option><option>冬季</option></select></label>
+        <label>保暖度<select name="warmth"><option value="1">轻薄</option><option value="2">适中</option><option value="3">保暖</option></select></label>
+        <label class="wide">风格<select name="style"><option>简约</option><option>休闲</option><option>通勤</option><option>复古</option><option>运动</option><option>甜美</option><option>街头</option><option>正式</option></select></label>
+      </div>
+      <div class="modal-actions"><button class="danger-button" id="deleteItemButton" type="button">删除衣物</button><button class="primary-button" value="default">保存修改</button></div>
+    </form>
+  </dialog>
+
+  <div class="upload-toast" id="uploadToast" role="status" aria-live="polite"><span class="spinner"></span><strong>正在整理照片…</strong><small id="uploadProgress">0 / 0</small></div>
+  <div class="snackbar" id="snackbar" role="status" aria-live="polite"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
+
