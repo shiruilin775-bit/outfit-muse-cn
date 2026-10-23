@@ -1,0 +1,14 @@
+{
+  "name": "今日穿搭 · 私人衣橱助手",
+  "short_name": "今日穿搭",
+  "description": "结合天气，从你自己的衣橱中生成每日穿搭建议。",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#0d0f12",
+  "theme_color": "#0d0f12",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
+
